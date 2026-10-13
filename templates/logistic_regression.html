@@ -1,0 +1,267 @@
+{% extends "base.html" %}
+
+{% block title %}Logistic Regression | FreshChain{% endblock %}
+
+{% block content %}
+
+<!-- PAGE HEADER -->
+<section class="page-header">
+    <div>
+        <span class="eyebrow">MACHINE LEARNING / CLASSIFICATION</span>
+        <h1>Logistic Regression</h1>
+        <p>
+            Train, evaluate, and inspect a classification model that predicts
+            fruit condition from environmental sensor readings.
+        </p>
+    </div>
+
+    <div class="header-badge">
+        <span class="status-dot"></span>
+        Classification Model
+    </div>
+</section>
+
+<!-- MODEL OVERVIEW -->
+<section class="stats-grid">
+
+    <article class="stat-card">
+        <div class="stat-top">
+            <span class="stat-label">Test Accuracy</span>
+            <span class="stat-icon">◎</span>
+        </div>
+        <h2>
+            {% if metrics is defined and metrics and metrics.accuracy is defined %}
+                {{ "%.2f"|format(metrics.accuracy * 100) }}%
+            {% else %}
+                —
+            {% endif %}
+        </h2>
+        <p>Correct predictions on held-out data</p>
+    </article>
+
+    <article class="stat-card">
+        <div class="stat-top">
+            <span class="stat-label">Macro F1-Score</span>
+            <span class="stat-icon">◈</span>
+        </div>
+        <h2>
+            {% if metrics is defined and metrics and metrics.macro_f1 is defined %}
+                {{ "%.3f"|format(metrics.macro_f1) }}
+            {% else %}
+                —
+            {% endif %}
+        </h2>
+        <p>Performance across target classes</p>
+    </article>
+
+    <article class="stat-card">
+        <div class="stat-top">
+            <span class="stat-label">Balanced Accuracy</span>
+            <span class="stat-icon">⌁</span>
+        </div>
+        <h2>
+            {% if metrics is defined and metrics and metrics.balanced_accuracy is defined %}
+                {{ "%.2f"|format(metrics.balanced_accuracy * 100) }}%
+            {% else %}
+                —
+            {% endif %}
+        </h2>
+        <p>Average recall across classes</p>
+    </article>
+
+    <article class="stat-card">
+        <div class="stat-top">
+            <span class="stat-label">Algorithm</span>
+            <span class="stat-icon">✳</span>
+        </div>
+        <h2 class="stat-word">Logistic Regression</h2>
+        <p>Supervised classification</p>
+    </article>
+
+</section>
+
+<!-- MODEL DESCRIPTION -->
+<section class="panel">
+    <div class="panel-heading">
+        <div>
+            <span class="section-kicker">01 / MODEL OVERVIEW</span>
+            <h2>About the model</h2>
+            <p>A transparent baseline for fruit condition classification.</p>
+        </div>
+    </div>
+
+    <div class="model-intro-grid">
+        <div class="model-description">
+            <h3>What does Logistic Regression do?</h3>
+            <p>
+                Logistic Regression estimates class probabilities from input
+                features and assigns a predicted class. In FreshChain, the
+                inputs are fruit type and four environmental sensor readings.
+            </p>
+
+            <p>
+                The preprocessing pipeline imputes missing sensor values,
+                encodes fruit categories, and standardizes numerical features
+                before fitting the classifier.
+            </p>
+        </div>
+
+        <div class="model-details">
+            <div class="detail-row">
+                <span>Learning type</span>
+                <strong>Supervised</strong>
+            </div>
+            <div class="detail-row">
+                <span>Task</span>
+                <strong>Classification</strong>
+            </div>
+            <div class="detail-row">
+                <span>Input features</span>
+                <strong>5 raw features</strong>
+            </div>
+            <div class="detail-row">
+                <span>Target</span>
+                <strong>Class</strong>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- TRAINING CONTROLS -->
+<section class="panel">
+    <div class="panel-heading">
+        <div>
+            <span class="section-kicker">02 / MODEL TRAINING</span>
+            <h2>Train the classifier</h2>
+            <p>
+                Start the training workflow and evaluate the model on
+                a held-out test set.
+            </p>
+        </div>
+    </div>
+
+    <div class="training-action">
+        <div>
+            <h3>Logistic Regression Pipeline</h3>
+            <p>
+                Data preprocessing, model fitting, evaluation metrics,
+                and artifact saving.
+            </p>
+        </div>
+
+        <form action="{{ url_for('logistic_regression') }}" method="POST">
+            <button type="submit" class="btn btn-primary">
+                Train Model <span aria-hidden="true">→</span>
+            </button>
+        </form>
+    </div>
+
+    {% if training_message is defined and training_message %}
+        <div class="training-message">
+            {{ training_message }}
+        </div>
+    {% endif %}
+</section>
+
+<!-- CONFUSION MATRIX -->
+<section class="panel">
+    <div class="panel-heading">
+        <div>
+            <span class="section-kicker">03 / PREDICTION ANALYSIS</span>
+            <h2>Confusion Matrix</h2>
+            <p>
+                Compare predicted labels against actual labels on the test set.
+            </p>
+        </div>
+    </div>
+
+    {% if confusion_matrix_html is defined and confusion_matrix_html %}
+        <div class="table-wrapper">
+            {{ confusion_matrix_html | safe }}
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <span class="empty-icon">▦</span>
+            <h3>No confusion matrix yet</h3>
+            <p>
+                Train the model and pass the test-set confusion matrix
+                from your Flask route.
+            </p>
+        </div>
+    {% endif %}
+</section>
+
+<!-- CLASSIFICATION REPORT -->
+<section class="panel">
+    <div class="panel-heading">
+        <div>
+            <span class="section-kicker">04 / CLASS METRICS</span>
+            <h2>Classification Report</h2>
+            <p>
+                Inspect precision, recall, F1-score, and support for each class.
+            </p>
+        </div>
+    </div>
+
+    {% if classification_report_html is defined and classification_report_html %}
+        <div class="table-wrapper">
+            {{ classification_report_html | safe }}
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <span class="empty-icon">▤</span>
+            <h3>Report not available yet</h3>
+            <p>
+                The classification report will appear after your
+                training route supplies the evaluation results.
+            </p>
+        </div>
+    {% endif %}
+</section>
+
+<!-- ROC AUC -->
+<section class="panel">
+    <div class="panel-heading">
+        <div>
+            <span class="section-kicker">05 / PROBABILITY METRICS</span>
+            <h2>ROC-AUC Score</h2>
+            <p>Evaluate how well the model separates the target classes.</p>
+        </div>
+    </div>
+
+    <div class="metric-highlight">
+        <div>
+            <span class="metric-highlight-label">Test ROC-AUC</span>
+            <strong>
+                {% if metrics is defined and metrics and metrics.roc_auc is defined and metrics.roc_auc is not none %}
+                    {{ "%.4f"|format(metrics.roc_auc) }}
+                {% else %}
+                    —
+                {% endif %}
+            </strong>
+        </div>
+        <p>
+            ROC-AUC is available when the test data and prediction probabilities
+            support the calculation. It is not the same as accuracy.
+        </p>
+    </div>
+</section>
+
+<!-- NEXT STEP -->
+<section class="insight-banner">
+    <div class="insight-symbol">✦</div>
+
+    <div class="insight-content">
+        <h3>Ready to test your model?</h3>
+        <p>
+            Use the trained pipeline to predict a fruit condition from
+            new sensor measurements.
+        </p>
+    </div>
+
+    <a href="{{ url_for('predict') }}" class="btn btn-primary">
+        Open Prediction →
+    </a>
+</section>
+
+{% endblock %}

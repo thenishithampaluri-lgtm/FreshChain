@@ -1,0 +1,366 @@
+
+{% extends "base.html" %}
+
+{% block title %}Feature Engineering | FreshChain{% endblock %}
+
+{% block content %}
+
+<!-- PAGE HEADER -->
+<section class="page-header">
+    <div>
+        <span class="eyebrow">DATA SCIENCE / FEATURE PREPARATION</span>
+        <h1>Feature Engineering</h1>
+        <p>
+            Transform raw fruit sensor measurements into structured,
+            model-ready features using a reproducible preprocessing pipeline.
+        </p>
+    </div>
+
+    <div class="header-badge">
+        <span class="status-dot"></span>
+        Feature Workspace
+    </div>
+</section>
+
+<!-- OVERVIEW METRICS -->
+<section class="stats-grid">
+
+    <article class="stat-card">
+        <div class="stat-top">
+            <span class="stat-label">Raw Features</span>
+            <span class="stat-icon">▤</span>
+        </div>
+        <h2>5</h2>
+        <p>Fruit category and four sensor inputs</p>
+    </article>
+
+    <article class="stat-card">
+        <div class="stat-top">
+            <span class="stat-label">Engineered Features</span>
+            <span class="stat-icon">⌘</span>
+        </div>
+        <h2>
+            {% if engineered_feature_count is defined %}
+                {{ engineered_feature_count }}
+            {% else %}
+                —
+            {% endif %}
+        </h2>
+        <p>Features after the selected transformations</p>
+    </article>
+
+    <article class="stat-card">
+        <div class="stat-top">
+            <span class="stat-label">Missing Inputs</span>
+            <span class="stat-icon">⌁</span>
+        </div>
+        <h2>
+            {% if missing_values is defined %}
+                {{ missing_values }}
+            {% else %}
+                —
+            {% endif %}
+        </h2>
+        <p>Missing values before preprocessing</p>
+    </article>
+
+    <article class="stat-card">
+        <div class="stat-top">
+            <span class="stat-label">Preprocessing</span>
+            <span class="stat-icon">◈</span>
+        </div>
+        <h2 class="stat-word">Pipeline</h2>
+        <p>Reusable transformations for machine learning</p>
+    </article>
+
+</section>
+
+<!-- FEATURE ENGINEERING OVERVIEW -->
+<section class="panel">
+    <div class="panel-heading">
+        <div>
+            <span class="section-kicker">01 / TRANSFORMATION PIPELINE</span>
+            <h2>From raw inputs to model-ready features</h2>
+            <p>
+                Apply transformations consistently while preventing
+                information leakage from the test set.
+            </p>
+        </div>
+    </div>
+
+    <div class="feature-pipeline">
+
+        <article class="pipeline-step">
+            <span class="pipeline-number">01</span>
+            <span class="pipeline-icon">▤</span>
+            <h3>Raw Dataset</h3>
+            <p>Fruit type, temperature, humidity, light and CO₂.</p>
+        </article>
+
+        <div class="pipeline-connector" aria-hidden="true">→</div>
+
+        <article class="pipeline-step">
+            <span class="pipeline-number">02</span>
+            <span class="pipeline-icon">⌘</span>
+            <h3>Preprocessing</h3>
+            <p>Impute missing values and encode categorical inputs.</p>
+        </article>
+
+        <div class="pipeline-connector" aria-hidden="true">→</div>
+
+        <article class="pipeline-step">
+            <span class="pipeline-number">03</span>
+            <span class="pipeline-icon">◈</span>
+            <h3>Transformation</h3>
+            <p>Scale numerical features and apply selected engineering.</p>
+        </article>
+
+        <div class="pipeline-connector" aria-hidden="true">→</div>
+
+        <article class="pipeline-step">
+            <span class="pipeline-number">04</span>
+            <span class="pipeline-icon">✓</span>
+            <h3>Model Ready</h3>
+            <p>Pass processed features to the trained classifier.</p>
+        </article>
+
+    </div>
+</section>
+
+<!-- RAW FEATURES -->
+<section class="panel">
+    <div class="panel-heading">
+        <div>
+            <span class="section-kicker">02 / INPUT FEATURES</span>
+            <h2>Original dataset features</h2>
+            <p>The sensor columns and categorical input used by FreshChain.</p>
+        </div>
+    </div>
+
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>Feature</th>
+                    <th>Data Type</th>
+                    <th>Role</th>
+                    <th>Preparation</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr>
+                    <td><strong>Fruit</strong></td>
+                    <td>Categorical</td>
+                    <td>Input</td>
+                    <td>Imputation and one-hot encoding</td>
+                </tr>
+
+                <tr>
+                    <td><strong>Temp</strong></td>
+                    <td>Numerical</td>
+                    <td>Input</td>
+                    <td>Median imputation and scaling</td>
+                </tr>
+
+                <tr>
+                    <td><strong>Humid (%)</strong></td>
+                    <td>Numerical</td>
+                    <td>Input</td>
+                    <td>Median imputation and scaling</td>
+                </tr>
+
+                <tr>
+                    <td><strong>Light (Fux)</strong></td>
+                    <td>Numerical</td>
+                    <td>Input</td>
+                    <td>Median imputation and scaling</td>
+                </tr>
+
+                <tr>
+                    <td><strong>CO2 (pmm)</strong></td>
+                    <td>Numerical</td>
+                    <td>Input</td>
+                    <td>Median imputation and scaling</td>
+                </tr>
+
+                <tr>
+                    <td><strong>Class</strong></td>
+                    <td>Categorical</td>
+                    <td>Target</td>
+                    <td>Predicted label; excluded from input features</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<!-- ENGINEERING METHODS -->
+<section class="panel">
+    <div class="panel-heading">
+        <div>
+            <span class="section-kicker">03 / ENGINEERING METHODS</span>
+            <h2>Feature transformation methods</h2>
+            <p>
+                Select transformations based on data characteristics,
+                model requirements, and validation performance.
+            </p>
+        </div>
+    </div>
+
+    <div class="engineering-grid">
+
+        <article class="engineering-card">
+            <div class="engineering-card-top">
+                <span class="engineering-icon">A</span>
+                <span class="method-tag">Categorical</span>
+            </div>
+            <h3>One-Hot Encoding</h3>
+            <p>
+                Converts fruit categories into numerical indicator columns
+                so the classifier can process them.
+            </p>
+            <div class="method-example">
+                <span>Fruit = Apple</span>
+                <span class="method-arrow">→</span>
+                <strong>Fruit_Apple = 1</strong>
+            </div>
+        </article>
+
+        <article class="engineering-card">
+            <div class="engineering-card-top">
+                <span class="engineering-icon">σ</span>
+                <span class="method-tag">Scaling</span>
+            </div>
+            <h3>Standardization</h3>
+            <p>
+                Rescales numerical readings using statistics learned from
+                training data. Useful for Logistic Regression.
+            </p>
+            <div class="method-example">
+                <span>Sensor values</span>
+                <span class="method-arrow">→</span>
+                <strong>Scaled values</strong>
+            </div>
+        </article>
+
+        <article class="engineering-card">
+            <div class="engineering-card-top">
+                <span class="engineering-icon">∼</span>
+                <span class="method-tag">Missing Data</span>
+            </div>
+            <h3>Median Imputation</h3>
+            <p>
+                Replaces missing numerical measurements with medians
+                calculated from the training data.
+            </p>
+            <div class="method-example">
+                <span>Missing reading</span>
+                <span class="method-arrow">→</span>
+                <strong>Training median</strong>
+            </div>
+        </article>
+
+        <article class="engineering-card">
+            <div class="engineering-card-top">
+                <span class="engineering-icon">ƒ</span>
+                <span class="method-tag">Optional</span>
+            </div>
+            <h3>Interaction Features</h3>
+            <p>
+                Candidate features can represent combinations of sensor
+                measurements when justified by domain knowledge.
+            </p>
+            <div class="method-example">
+                <span>Temp × Humidity</span>
+                <span class="method-arrow">→</span>
+                <strong>Candidate feature</strong>
+            </div>
+        </article>
+
+    </div>
+
+    <p class="feature-note">
+        Note: interaction, logarithmic and polynomial features are optional.
+        Keep them only if validation shows a benefit. They are not automatically
+        applied just because they are described on this page.
+    </p>
+</section>
+
+<!-- ENGINEERED FEATURE PREVIEW -->
+<section class="panel">
+    <div class="panel-heading">
+        <div>
+            <span class="section-kicker">04 / FEATURE PREVIEW</span>
+            <h2>Processed dataset preview</h2>
+            <p>
+                Inspect transformed features generated by your actual
+                feature engineering pipeline.
+            </p>
+        </div>
+    </div>
+
+    {% if feature_preview is defined and feature_preview %}
+        <div class="table-wrapper">
+            {{ feature_preview | safe }}
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <span class="empty-icon">▦</span>
+            <h3>No processed preview available</h3>
+            <p>
+                Connect your feature engineering module and pass its
+                processed preview to this template.
+            </p>
+        </div>
+    {% endif %}
+</section>
+
+<!-- FEATURE IMPORTANCE / CORRELATION -->
+<section class="panel">
+    <div class="panel-heading">
+        <div>
+            <span class="section-kicker">05 / FEATURE ANALYSIS</span>
+            <h2>Feature evaluation</h2>
+            <p>
+                Use statistical analysis and held-out model validation
+                to determine whether engineered features help.
+            </p>
+        </div>
+    </div>
+
+    {% if feature_analysis is defined and feature_analysis %}
+        <div class="table-wrapper">
+            {{ feature_analysis | safe }}
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <span class="empty-icon">⌁</span>
+            <h3>Feature evaluation pending</h3>
+            <p>
+                Feature correlations or validation results will appear
+                when your backend supplies the analysis.
+            </p>
+        </div>
+    {% endif %}
+</section>
+
+<!-- NEXT STEP -->
+<section class="insight-banner">
+    <div class="insight-symbol">✦</div>
+
+    <div class="insight-content">
+        <h3>Your features are the foundation of the model</h3>
+        <p>
+            After preparing the inputs, train Logistic Regression
+            and compare its performance on unseen test data.
+        </p>
+    </div>
+
+    <a href="{{ url_for('logistic_regression') }}"
+       class="btn btn-primary">
+        Logistic Regression →
+    </a>
+</section>
+
+{% endblock %}

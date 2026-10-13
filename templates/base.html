@@ -1,0 +1,164 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="theme-color" content="#f7fbf7">
+    <meta name="description"
+          content="FreshChain — Intelligent fruit condition analysis using environmental sensor data.">
+
+    <title>{% block title %}FreshChain | Smart Freshness Intelligence{% endblock %}</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap"
+          rel="stylesheet">
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+    {% block head %}{% endblock %}
+</head>
+
+<body>
+    <!-- Accessibility -->
+    <a class="skip-link" href="#main-content">Skip to content</a>
+
+    <!-- Navigation -->
+    <header class="site-header">
+        <div class="navbar">
+
+            <a class="brand" href="{{ url_for('index') }}"
+               aria-label="FreshChain home">
+
+                <span class="brand-mark" aria-hidden="true">
+                    <svg viewBox="0 0 40 40" role="img">
+                        <rect width="40" height="40" rx="13" fill="#198754"/>
+                        <path d="M20 29C11 29 9 22 11 15C18 15 24 18 25 24"
+                              fill="none" stroke="#FFFFFF"
+                              stroke-width="2.5" stroke-linecap="round"/>
+                        <path d="M20 28C19 20 24 12 31 11C32 19 28 26 20 28Z"
+                              fill="#B9F3C9"/>
+                        <path d="M15 24L26 15"
+                              fill="none" stroke="#FFFFFF"
+                              stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </span>
+
+                <span class="brand-copy">
+                    <span class="brand-name">FreshChain</span>
+                    <span class="brand-caption">FRESHNESS INTELLIGENCE</span>
+                </span>
+            </a>
+
+            <nav class="main-navigation" aria-label="Main navigation">
+
+                <a href="{{ url_for('index') }}"
+                   class="nav-link {% if request.endpoint == 'index' %}active{% endif %}"
+                   {% if request.endpoint == 'index' %}aria-current="page"{% endif %}>
+                    <span class="nav-icon" aria-hidden="true">⌂</span>
+                    <span>Overview</span>
+                </a>
+
+                <a href="{{ url_for('data_loading') }}"
+                   class="nav-link {% if request.endpoint == 'data_loading' %}active{% endif %}"
+                   {% if request.endpoint == 'data_loading' %}aria-current="page"{% endif %}>
+                    <span class="nav-icon" aria-hidden="true">▤</span>
+                    <span>Dataset</span>
+                </a>
+
+                <a href="{{ url_for('eda') }}"
+                   class="nav-link {% if request.endpoint == 'eda' %}active{% endif %}"
+                   {% if request.endpoint == 'eda' %}aria-current="page"{% endif %}>
+                    <span class="nav-icon" aria-hidden="true">▥</span>
+                    <span>EDA</span>
+                </a>
+
+                <a href="{{ url_for('feature_engineering') }}"
+                   class="nav-link {% if request.endpoint == 'feature_engineering' %}active{% endif %}"
+                   {% if request.endpoint == 'feature_engineering' %}aria-current="page"{% endif %}>
+                    <span class="nav-icon" aria-hidden="true">⌘</span>
+                    <span>Features</span>
+                </a>
+
+                <a href="{{ url_for('model_training') }}"
+                   class="nav-link {% if request.endpoint in ['model_training', 'logistic_regression'] %}active{% endif %}"
+                   {% if request.endpoint in ['model_training', 'logistic_regression'] %}aria-current="page"{% endif %}>
+                    <span class="nav-icon" aria-hidden="true">◈</span>
+                    <span>Models</span>
+                </a>
+
+                <a href="{{ url_for('predict') }}"
+                   class="nav-link {% if request.endpoint == 'predict' %}active{% endif %}"
+                   {% if request.endpoint == 'predict' %}aria-current="page"{% endif %}>
+                    <span class="nav-icon" aria-hidden="true">✳</span>
+                    <span>Predict</span>
+                </a>
+
+            </nav>
+
+            <div class="header-status">
+                <span class="status-indicator" aria-hidden="true"></span>
+                <span>System Workspace</span>
+            </div>
+
+        </div>
+    </header>
+
+    <!-- Main page content -->
+    <main id="main-content" class="main-content">
+
+        <!-- Flash notifications -->
+        <div class="flash-container" aria-live="polite">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="flash-message flash-{{ category }}">
+                            <span class="flash-symbol" aria-hidden="true">
+                                {% if category == 'error' %}
+                                    !
+                                {% elif category == 'success' %}
+                                    ✓
+                                {% else %}
+                                    i
+                                {% endif %}
+                            </span>
+
+                            <span>{{ message }}</span>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </div>
+
+        {% block content %}{% endblock %}
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="footer-inner">
+
+            <a class="footer-brand" href="{{ url_for('index') }}">
+                <span class="footer-brand-dot"></span>
+                FreshChain
+            </a>
+
+            <p class="footer-description">
+                Smarter insights for fruit condition monitoring.
+            </p>
+
+            <div class="footer-meta">
+                <span>Machine Learning Workspace</span>
+                <span class="footer-separator">·</span>
+                <span>© 2026 FreshChain</span>
+            </div>
+
+        </div>
+    </footer>
+
+    {% block scripts %}{% endblock %}
+</body>
+</html>

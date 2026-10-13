@@ -1,0 +1,340 @@
+
+{% extends "base.html" %}
+
+{% block title %}Model Training | FreshChain{% endblock %}
+
+{% block content %}
+
+<!-- PAGE HEADER -->
+<section class="page-header">
+    <div>
+        <span class="eyebrow">MACHINE LEARNING / MODEL LAB</span>
+        <h1>Model Training Studio</h1>
+        <p>
+            Train classification models, evaluate their performance,
+            and select a suitable model for FreshChain predictions.
+        </p>
+    </div>
+
+    <div class="header-badge">
+        <span class="status-dot"></span>
+        Model Workspace
+    </div>
+</section>
+
+<!-- MODEL METRICS -->
+<section class="stats-grid">
+
+    <article class="stat-card">
+        <div class="stat-top">
+            <span class="stat-label">Selected Model</span>
+            <span class="stat-icon">◈</span>
+        </div>
+        <h2 class="stat-word">
+            {{ selected_model | default('Logistic Regression') }}
+        </h2>
+        <p>Current model selection</p>
+    </article>
+
+    <article class="stat-card">
+        <div class="stat-top">
+            <span class="stat-label">Test Accuracy</span>
+            <span class="stat-icon">◎</span>
+        </div>
+        <h2>
+            {% if metrics is defined and metrics and metrics.accuracy is defined %}
+                {{ "%.2f"|format(metrics.accuracy * 100) }}%
+            {% else %}
+                —
+            {% endif %}
+        </h2>
+        <p>Correct predictions on held-out data</p>
+    </article>
+
+    <article class="stat-card">
+        <div class="stat-top">
+            <span class="stat-label">Macro F1-Score</span>
+            <span class="stat-icon">⌁</span>
+        </div>
+        <h2>
+            {% if metrics is defined and metrics and metrics.macro_f1 is defined %}
+                {{ "%.3f"|format(metrics.macro_f1) }}
+            {% else %}
+                —
+            {% endif %}
+        </h2>
+        <p>Average F1 across target classes</p>
+    </article>
+
+    <article class="stat-card">
+        <div class="stat-top">
+            <span class="stat-label">Model Status</span>
+            <span class="stat-icon">✓</span>
+        </div>
+        <h2 class="stat-word">
+            {{ model_status | default('Not trained') }}
+        </h2>
+        <p>Training and artifact status</p>
+    </article>
+
+</section>
+
+<!-- TRAINING CONTROL -->
+<section class="panel">
+    <div class="panel-heading">
+        <div>
+            <span class="section-kicker">01 / TRAINING CONFIGURATION</span>
+            <h2>Configure your experiment</h2>
+            <p>
+                Choose a supported classification algorithm and start
+                model training on the dataset.
+            </p>
+        </div>
+    </div>
+
+    <form action="{{ url_for('model_training') }}"
+          method="POST"
+          class="training-form">
+
+        <div class="form-field">
+            <label for="algorithm">Classification algorithm</label>
+
+            <select id="algorithm" name="algorithm" required>
+                <option value="logistic_regression"
+                    {% if selected_algorithm is defined and selected_algorithm == 'logistic_regression' %}
+                        selected
+                    {% endif %}>
+                    Logistic Regression
+                </option>
+
+                <option value="random_forest"
+                    {% if selected_algorithm is defined and selected_algorithm == 'random_forest' %}
+                        selected
+                    {% endif %}>
+                    Random Forest
+                </option>
+
+                <option value="decision_tree"
+                    {% if selected_algorithm is defined and selected_algorithm == 'decision_tree' %}
+                        selected
+                    {% endif %}>
+                    Decision Tree
+                </option>
+            </select>
+
+            <small>
+                The selected algorithm must be implemented in your
+                Python training backend.
+            </small>
+        </div>
+
+        <div class="training-action">
+            <div>
+                <h3>Run training and evaluation</h3>
+                <p>
+                    Fit preprocessing on training data, train the classifier,
+                    evaluate the test set, and save the model artifact.
+                </p>
+            </div>
+
+            <button type="submit" class="btn btn-primary">
+                Train Model <span aria-hidden="true">→</span>
+            </button>
+        </div>
+    </form>
+
+    {% if training_message is defined and training_message %}
+        <div class="training-message">
+            {{ training_message }}
+        </div>
+    {% endif %}
+</section>
+
+<!-- TRAINING SUMMARY -->
+<section class="panel">
+    <div class="panel-heading">
+        <div>
+            <span class="section-kicker">02 / EXPERIMENT SUMMARY</span>
+            <h2>Training details</h2>
+            <p>Review the configuration and dataset split used for evaluation.</p>
+        </div>
+    </div>
+
+    <div class="model-details">
+        <div class="detail-row">
+            <span>Algorithm</span>
+            <strong>
+                {{ selected_model | default('Logistic Regression') }}
+            </strong>
+        </div>
+
+        <div class="detail-row">
+            <span>Training records</span>
+            <strong>
+                {{ training_rows if training_rows is defined else '—' }}
+            </strong>
+        </div>
+
+        <div class="detail-row">
+            <span>Test records</span>
+            <strong>
+                {{ testing_rows if testing_rows is defined else '—' }}
+            </strong>
+        </div>
+
+        <div class="detail-row">
+            <span>Target column</span>
+            <strong>Class</strong>
+        </div>
+
+        <div class="detail-row">
+            <span>Input features</span>
+            <strong>Fruit + 4 sensor readings</strong>
+        </div>
+    </div>
+</section>
+
+<!-- MODEL COMPARISON -->
+<section class="panel">
+    <div class="panel-heading">
+        <div>
+            <span class="section-kicker">03 / MODEL BENCHMARKING</span>
+            <h2>Compare classification models</h2>
+            <p>
+                Compare actual evaluation results before choosing
+                a model for deployment.
+            </p>
+        </div>
+    </div>
+
+    {% if comparison_table is defined and comparison_table %}
+        <div class="table-wrapper">
+            {{ comparison_table | safe }}
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <span class="empty-icon">▥</span>
+            <h3>No comparison results yet</h3>
+            <p>
+                Train and evaluate multiple implemented algorithms
+                using the same test split to populate this table.
+            </p>
+        </div>
+    {% endif %}
+</section>
+
+<!-- CLASSIFICATION METRICS -->
+<section class="panel">
+    <div class="panel-heading">
+        <div>
+            <span class="section-kicker">04 / EVALUATION METRICS</span>
+            <h2>Model performance</h2>
+            <p>Review metrics calculated from held-out test predictions.</p>
+        </div>
+    </div>
+
+    {% if metrics is defined and metrics %}
+        <div class="model-details">
+            <div class="detail-row">
+                <span>Accuracy</span>
+                <strong>
+                    {% if metrics.accuracy is defined %}
+                        {{ "%.4f"|format(metrics.accuracy) }}
+                    {% else %}
+                        —
+                    {% endif %}
+                </strong>
+            </div>
+
+            <div class="detail-row">
+                <span>Balanced accuracy</span>
+                <strong>
+                    {% if metrics.balanced_accuracy is defined %}
+                        {{ "%.4f"|format(metrics.balanced_accuracy) }}
+                    {% else %}
+                        —
+                    {% endif %}
+                </strong>
+            </div>
+
+            <div class="detail-row">
+                <span>Macro F1-score</span>
+                <strong>
+                    {% if metrics.macro_f1 is defined %}
+                        {{ "%.4f"|format(metrics.macro_f1) }}
+                    {% else %}
+                        —
+                    {% endif %}
+                </strong>
+            </div>
+
+            <div class="detail-row">
+                <span>ROC-AUC</span>
+                <strong>
+                    {% if metrics.roc_auc is defined and metrics.roc_auc is not none %}
+                        {{ "%.4f"|format(metrics.roc_auc) }}
+                    {% else %}
+                        Not available
+                    {% endif %}
+                </strong>
+            </div>
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <span class="empty-icon">◎</span>
+            <h3>Awaiting evaluation</h3>
+            <p>
+                Performance metrics will appear after the backend
+                trains and evaluates a model.
+            </p>
+        </div>
+    {% endif %}
+</section>
+
+<!-- SAVED MODEL -->
+<section class="panel">
+    <div class="panel-heading">
+        <div>
+            <span class="section-kicker">05 / MODEL ARTIFACT</span>
+            <h2>Saved model</h2>
+            <p>Check whether a trained model is available for predictions.</p>
+        </div>
+    </div>
+
+    <div class="saved-model-card">
+        <div class="saved-model-icon" aria-hidden="true">▣</div>
+
+        <div class="saved-model-info">
+            <h3>
+                {{ model_filename | default('logistic_regression_pipeline.joblib') }}
+            </h3>
+            <p>
+                A saved pipeline should contain both preprocessing
+                and the fitted classifier.
+            </p>
+        </div>
+
+        <span class="model-status-pill">
+            {{ model_status | default('Not trained') }}
+        </span>
+    </div>
+</section>
+
+<!-- NEXT ACTION -->
+<section class="insight-banner">
+    <div class="insight-symbol">✦</div>
+
+    <div class="insight-content">
+        <h3>Ready to make a prediction?</h3>
+        <p>
+            Once a model has been trained and saved, use it to classify
+            new fruit sensor readings.
+        </p>
+    </div>
+
+    <a href="{{ url_for('predict') }}" class="btn btn-primary">
+        Open Prediction →
+    </a>
+</section>
+
+{% endblock %}

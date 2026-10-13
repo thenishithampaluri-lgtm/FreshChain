@@ -1,0 +1,205 @@
+
+{% extends "base.html" %}
+
+{% block title %}Data Loading | FreshChain{% endblock %}
+
+{% block content %}
+
+<section class="page-header">
+    <div>
+        <span class="eyebrow">DATA MANAGEMENT / OVERVIEW</span>
+        <h1>Dataset Explorer</h1>
+        <p>
+            Load, validate, and inspect your fruit sensor dataset
+            before exploratory analysis and machine learning.
+        </p>
+    </div>
+
+    <div class="header-badge">
+        <span class="status-dot"></span>
+        Data Overview
+    </div>
+</section>
+
+<!-- STATISTICS -->
+<section class="stats-grid">
+
+    <article class="stat-card">
+        <div class="stat-top">
+            <span class="stat-label">Total Records</span>
+            <span class="stat-icon">▤</span>
+        </div>
+        <h2>{{ rows | default(0) }}</h2>
+        <p>Dataset observations</p>
+    </article>
+
+    <article class="stat-card">
+        <div class="stat-top">
+            <span class="stat-label">Total Features</span>
+            <span class="stat-icon">◈</span>
+        </div>
+        <h2>{{ columns | default(0) }}</h2>
+        <p>Available data columns</p>
+    </article>
+
+    <article class="stat-card">
+        <div class="stat-top">
+            <span class="stat-label">Missing Values</span>
+            <span class="stat-icon">⌁</span>
+        </div>
+        <h2>{{ missing | default(0) }}</h2>
+        <p>Values requiring attention</p>
+    </article>
+
+    <article class="stat-card">
+        <div class="stat-top">
+            <span class="stat-label">Target Classes</span>
+            <span class="stat-icon">◉</span>
+        </div>
+        <h2>
+            {% if class_distribution is defined and class_distribution %}
+                {{ class_distribution | length }}
+            {% else %}
+                —
+            {% endif %}
+        </h2>
+        <p>Fruit condition categories</p>
+    </article>
+
+</section>
+
+<!-- DATASET STATUS -->
+<section class="panel">
+    <div class="panel-heading">
+        <div>
+            <span class="section-kicker">01 / DATA QUALITY</span>
+            <h2>Dataset Readiness</h2>
+            <p>Quick overview of the data loaded into FreshChain.</p>
+        </div>
+    </div>
+
+    <div class="readiness-grid">
+        <div class="readiness-item">
+            <span class="readiness-icon">✓</span>
+            <div>
+                <strong>Dataset loaded</strong>
+                <p>Dataset information is available for inspection.</p>
+            </div>
+        </div>
+
+        <div class="readiness-item">
+            <span class="readiness-icon">
+                {% if missing is defined and missing == 0 %}
+                    ✓
+                {% else %}
+                    !
+                {% endif %}
+            </span>
+            <div>
+                <strong>
+                    {% if missing is defined and missing == 0 %}
+                        No missing values
+                    {% else %}
+                        Missing values detected
+                    {% endif %}
+                </strong>
+                <p>
+                    {% if missing is defined and missing == 0 %}
+                        No null values were reported by the data loader.
+                    {% else %}
+                        Review the dataset and decide how to handle missing values.
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- DATA PREVIEW -->
+<section class="panel">
+    <div class="panel-heading">
+        <div>
+            <span class="section-kicker">02 / RAW DATA</span>
+            <h2>Dataset Preview</h2>
+            <p>Inspect the first observations and the available sensor readings.</p>
+        </div>
+        <span class="table-tag">Sample records</span>
+    </div>
+
+    {% if table is defined and table %}
+        <div class="table-wrapper">
+            {{ table | safe }}
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <span class="empty-icon">▤</span>
+            <h3>No preview available</h3>
+            <p>Pass an HTML table of the first dataset rows from your Flask route.</p>
+        </div>
+    {% endif %}
+</section>
+
+<!-- COLUMN INFORMATION -->
+<section class="panel">
+    <div class="panel-heading">
+        <div>
+            <span class="section-kicker">03 / SCHEMA INSPECTION</span>
+            <h2>Column Information</h2>
+            <p>Review the structure and data types of each column.</p>
+        </div>
+    </div>
+
+    {% if column_info is defined and column_info %}
+        <div class="table-wrapper">
+            {{ column_info | safe }}
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <span class="empty-icon">▦</span>
+            <h3>Column details unavailable</h3>
+            <p>Pass column names, data types, and non-null counts from your data loader.</p>
+        </div>
+    {% endif %}
+</section>
+
+<!-- CLASS DISTRIBUTION -->
+<section class="panel">
+    <div class="panel-heading">
+        <div>
+            <span class="section-kicker">04 / TARGET OVERVIEW</span>
+            <h2>Fruit Condition Distribution</h2>
+            <p>Understand the number of records belonging to each condition class.</p>
+        </div>
+    </div>
+
+    {% if class_distribution is defined and class_distribution %}
+        <div class="table-wrapper">
+            {{ class_distribution | safe }}
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <span class="empty-icon">◉</span>
+            <h3>Class distribution unavailable</h3>
+            <p>Pass the target value counts as an HTML table from your Flask route.</p>
+        </div>
+    {% endif %}
+</section>
+
+<!-- NEXT STEP -->
+<section class="insight-banner">
+    <div class="insight-symbol">✦</div>
+
+    <div class="insight-content">
+        <h3>Dataset loaded. Ready to explore?</h3>
+        <p>
+            Continue to Exploratory Data Analysis to investigate class balance,
+            fruit categories, sensor distributions, and feature relationships.
+        </p>
+    </div>
+
+    <a class="btn btn-primary" href="{{ url_for('eda') }}">
+        Explore Dataset →
+    </a>
+</section>
+
+{% endblock %}

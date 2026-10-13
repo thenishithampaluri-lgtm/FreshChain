@@ -1,0 +1,373 @@
+
+{% extends "base.html" %}
+
+{% block title %}Fruit Prediction | FreshChain{% endblock %}
+
+{% block content %}
+
+<!-- PAGE HEADER -->
+<section class="page-header">
+    <div>
+        <span class="eyebrow">INTELLIGENCE / LIVE CLASSIFICATION</span>
+        <h1>Fruit Condition Prediction</h1>
+        <p>
+            Enter fruit and environmental sensor readings to classify
+            the condition using your trained Logistic Regression model.
+        </p>
+    </div>
+
+    <div class="header-badge">
+        <span class="status-dot"></span>
+        Prediction Workspace
+    </div>
+</section>
+
+<!-- INTRODUCTION -->
+<section class="prediction-intro">
+    <div class="prediction-intro-icon" aria-hidden="true">✳</div>
+    <div>
+        <h2>Turn sensor readings into insights</h2>
+        <p>
+            Provide the five input features used by your model. FreshChain
+            will process the measurements and display the predicted class
+            and model-estimated probabilities.
+        </p>
+    </div>
+</section>
+
+<!-- MAIN PREDICTION LAYOUT -->
+<div class="prediction-layout">
+
+    <!-- INPUT FORM -->
+    <section class="panel prediction-form-panel">
+        <div class="panel-heading">
+            <div>
+                <span class="section-kicker">01 / SENSOR INPUTS</span>
+                <h2>Environmental parameters</h2>
+                <p>Enter the values for the fruit you want to evaluate.</p>
+            </div>
+        </div>
+
+        <form action="{{ url_for('predict') }}" method="POST"
+              class="prediction-form">
+
+            <div class="form-field">
+                <label for="fruit">Fruit variety</label>
+                <select id="fruit" name="fruit" required>
+                    <option value="">Select a fruit</option>
+
+                    {% if fruit_options is defined and fruit_options %}
+                        {% for fruit in fruit_options %}
+                            <option value="{{ fruit }}"
+                                {% if form_data is defined and form_data.get('fruit') == fruit %}
+                                    selected
+                                {% endif %}>
+                                {{ fruit }}
+                            </option>
+                        {% endfor %}
+                    {% else %}
+                        <option value="Apple">Apple</option>
+                        <option value="Banana">Banana</option>
+                        <option value="Mango">Mango</option>
+                        <option value="Orange">Orange</option>
+                    {% endif %}
+                </select>
+                <small>Choose a fruit category supported by your dataset.</small>
+            </div>
+
+            <div class="form-field">
+                <label for="temperature">
+                    Temperature
+                    <span class="field-unit">Dataset: Temp</span>
+                </label>
+                <input
+                    type="number"
+                    id="temperature"
+                    name="temperature"
+                    step="any"
+                    required
+                    value="{{ form_data.get('temperature', '') if form_data is defined else '' }}"
+                    placeholder="Enter temperature"
+                >
+                <small>Use the same unit and scale as your training data.</small>
+            </div>
+
+            <div class="form-field">
+                <label for="humidity">
+                    Humidity
+                    <span class="field-unit">%</span>
+                </label>
+                <input
+                    type="number"
+                    id="humidity"
+                    name="humidity"
+                    step="any"
+                    required
+                    value="{{ form_data.get('humidity', '') if form_data is defined else '' }}"
+                    placeholder="Enter humidity"
+                >
+                <small>Enter the recorded Humid (%) value.</small>
+            </div>
+
+            <div class="form-field">
+                <label for="light">
+                    Light intensity
+                    <span class="field-unit">Dataset: Light (Fux)</span>
+                </label>
+                <input
+                    type="number"
+                    id="light"
+                    name="light"
+                    step="any"
+                    required
+                    value="{{ form_data.get('light', '') if form_data is defined else '' }}"
+                    placeholder="Enter light reading"
+                >
+                <small>Use the measurement scale in your dataset.</small>
+            </div>
+
+            <div class="form-field">
+                <label for="co2">
+                    CO₂ concentration
+                    <span class="field-unit">Dataset: CO2 (pmm)</span>
+                </label>
+                <input
+                    type="number"
+                    id="co2"
+                    name="co2"
+                    step="any"
+                    required
+                    value="{{ form_data.get('co2', '') if form_data is defined else '' }}"
+                    placeholder="Enter CO₂ reading"
+                >
+                <small>Use the same unit and scale as your training data.</small>
+            </div>
+
+            <button type="submit" class="btn btn-primary prediction-submit">
+                <span aria-hidden="true">✳</span>
+                Predict Fruit Condition
+                <span aria-hidden="true">→</span>
+            </button>
+
+            <p class="form-disclaimer">
+                Predictions depend on the quality and coverage of the
+                training dataset. They are model estimates, not a guarantee
+                of actual fruit freshness or food safety.
+            </p>
+
+        </form>
+    </section>
+
+    <!-- RESULT PANEL -->
+    <aside class="prediction-result-column">
+
+        <section class="panel prediction-result-panel">
+            <div class="panel-heading">
+                <div>
+                    <span class="section-kicker">02 / MODEL OUTPUT</span>
+                    <h2>Prediction result</h2>
+                    <p>Your classification will appear here.</p>
+                </div>
+            </div>
+
+            {% if prediction is defined and prediction %}
+
+                {% set predicted_class = prediction | string | lower %}
+
+                <div class="result-status
+                    {% if predicted_class == 'bad' %}
+                        result-bad
+                    {% else %}
+                        result-good
+                    {% endif %}">
+
+                    <span class="result-status-icon" aria-hidden="true">
+                        {% if predicted_class == 'bad' %}
+                            !
+                        {% else %}
+                            ✓
+                        {% endif %}
+                    </span>
+
+                    <span class="result-status-label">
+                        Predicted condition
+                    </span>
+
+                    <h3>{{ prediction | upper }}</h3>
+
+                    <p>
+                        {% if predicted_class == 'bad' %}
+                            The model classified this observation as Bad.
+                            Consider checking the fruit and its storage conditions.
+                        {% elif predicted_class == 'good' %}
+                            The model classified this observation as Good.
+                        {% else %}
+                            The model returned the class shown above.
+                        {% endif %}
+                    </p>
+                </div>
+
+                {% if confidence is defined and confidence is not none %}
+                    <div class="confidence-section">
+                        <div class="confidence-heading">
+                            <span>Predicted-class probability</span>
+                            <strong>{{ "%.1f"|format(confidence * 100) }}%</strong>
+                        </div>
+
+                        <div class="confidence-track"
+                             role="progressbar"
+                             aria-label="Predicted-class probability"
+                             aria-valuemin="0"
+                             aria-valuemax="100"
+                             aria-valuenow="{{ (confidence * 100)|round|int }}">
+                            <div class="confidence-fill"
+                                 style="width: {{ [100, [0, confidence * 100]|max]|min }}%;">
+                            </div>
+                        </div>
+
+                        <p class="result-note">
+                            This is the model's estimated probability,
+                            not a guarantee that the prediction is correct.
+                        </p>
+                    </div>
+                {% endif %}
+
+                {% if probabilities is defined and probabilities %}
+                    <div class="probability-section">
+                        <h3>Class probabilities</h3>
+
+                        {% for label, probability in probabilities.items() %}
+                            <div class="probability-row">
+                                <div class="probability-label">
+                                    <span>{{ label | title }}</span>
+                                    <strong>{{ "%.1f"|format(probability * 100) }}%</strong>
+                                </div>
+
+                                <div class="probability-track">
+                                    <div class="probability-fill"
+                                         style="width: {{ [100, [0, probability * 100]|max]|min }}%;">
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+            {% else %}
+
+                <div class="empty-prediction">
+                    <div class="empty-prediction-illustration" aria-hidden="true">
+                        <svg viewBox="0 0 180 150" role="img"
+                             aria-label="Illustration of a fruit and sensor analysis">
+                            <rect x="24" y="18" width="132" height="112"
+                                  rx="22" fill="#F0F8F1"/>
+
+                            <circle cx="90" cy="76" r="37"
+                                    fill="#D9F1DE"/>
+
+                            <path d="M90 55
+                                     C79 43 61 52 60 68
+                                     C58 86 73 105 86 99
+                                     C90 97 94 97 99 99
+                                     C114 104 128 83 120 66
+                                     C114 51 99 46 90 55Z"
+                                  fill="#55B96B"/>
+
+                            <path d="M89 54 C87 44 91 38 97 32"
+                                  fill="none" stroke="#765535"
+                                  stroke-width="5" stroke-linecap="round"/>
+
+                            <path d="M95 41 C107 27 121 31 124 35
+                                     C116 47 104 49 95 41Z"
+                                  fill="#23834D"/>
+
+                            <circle cx="45" cy="39" r="5" fill="#A7DDB4"/>
+                            <circle cx="138" cy="99" r="7" fill="#B9E8C4"/>
+                            <path d="M42 111 L54 111 M48 105 L48 117"
+                                  stroke="#75BD89" stroke-width="2"
+                                  stroke-linecap="round"/>
+                        </svg>
+                    </div>
+
+                    <h3>Awaiting your readings</h3>
+                    <p>
+                        Fill in the sensor form and run a prediction
+                        to see the model's output.
+                    </p>
+                </div>
+
+            {% endif %}
+        </section>
+
+        <!-- INPUT SUMMARY -->
+        {% if form_data is defined and form_data %}
+            <section class="panel input-summary-panel">
+                <div class="panel-heading">
+                    <div>
+                        <span class="section-kicker">03 / INPUT SUMMARY</span>
+                        <h2>Submitted readings</h2>
+                    </div>
+                </div>
+
+                <div class="input-summary-list">
+                    <div>
+                        <span>Fruit</span>
+                        <strong>{{ form_data.get('fruit', '—') }}</strong>
+                    </div>
+                    <div>
+                        <span>Temperature</span>
+                        <strong>{{ form_data.get('temperature', '—') }}</strong>
+                    </div>
+                    <div>
+                        <span>Humidity</span>
+                        <strong>{{ form_data.get('humidity', '—') }}</strong>
+                    </div>
+                    <div>
+                        <span>Light</span>
+                        <strong>{{ form_data.get('light', '—') }}</strong>
+                    </div>
+                    <div>
+                        <span>CO₂</span>
+                        <strong>{{ form_data.get('co2', '—') }}</strong>
+                    </div>
+                </div>
+            </section>
+        {% endif %}
+
+    </aside>
+</div>
+
+<!-- HOW IT WORKS -->
+<section class="panel prediction-how-panel">
+    <div class="panel-heading">
+        <div>
+            <span class="section-kicker">HOW IT WORKS</span>
+            <h2>From sensor values to prediction</h2>
+            <p>Every prediction follows the same trained preprocessing pipeline.</p>
+        </div>
+    </div>
+
+    <div class="prediction-steps">
+
+        <article class="prediction-step">
+            <span class="step-number">01</span>
+            <h3>Enter readings</h3>
+            <p>Provide fruit type and the four sensor measurements.</p>
+        </article>
+
+        <article class="prediction-step">
+            <span class="step-number">02</span>
+            <h3>Process features</h3>
+            <p>Apply the saved encoding, imputation, and scaling steps.</p>
+        </article>
+
+        <article class="prediction-step">
+            <span class="step-number">03</span>
+            <h3>Classify condition</h3>
+            <p>Use the trained Logistic Regression model to estimate the class.</p>
+        </article>
+
+    </div>
+</section>
+
+{% endblock %}

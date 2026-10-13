@@ -1,0 +1,35 @@
+{
+    "model": "Logistic Regression",
+    "accuracy": 0.9158708503865394,
+    "balanced_accuracy": 0.917165654615335,
+    "macro_f1": 0.915853031195904,
+    "classification_report": {
+        "bad": {
+            "precision": 0.8781115879828326,
+            "recall": 0.9596622889305816,
+            "f1-score": 0.9170775437023756,
+            "support": 1066.0
+        },
+        "good": {
+            "precision": 0.9584139264990329,
+            "recall": 0.8746690203000883,
+            "f1-score": 0.9146285186894324,
+            "support": 1133.0
+        },
+        "accuracy": 0.9158708503865394,
+        "macro avg": {
+            "precision": 0.9182627572409328,
+            "recall": 0.917165654615335,
+            "f1-score": 0.915853031195904,
+            "support": 2199.0
+        },
+        "weighted avg": {
+            "precision": 0.9194860989145538,
+            "recall": 0.9158708503865394,
+            "f1-score": 0.9158157222655113,
+            "support": 2199.0
+        }
+    },
+    "training_rows": 8796,
+    "testing_rows": 2199
+}

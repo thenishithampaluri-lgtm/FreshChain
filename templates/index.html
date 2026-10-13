@@ -1,0 +1,327 @@
+
+{% extends "base.html" %}
+
+{% block title %}FreshChain | Smart Freshness Intelligence{% endblock %}
+
+{% block content %}
+
+<!-- HERO SECTION -->
+<section class="hero-section">
+    <div class="hero-content">
+        <div class="hero-eyebrow">
+            <span class="hero-eyebrow-dot"></span>
+            INTELLIGENT FRUIT MONITORING
+        </div>
+
+        <h1>
+            Freshness insights.<br>
+            <span>Smarter decisions.</span>
+        </h1>
+
+        <p class="hero-description">
+            Explore environmental sensor data, understand fruit condition
+            patterns, and use machine learning to classify fruit as Good
+            or Bad based on observed readings.
+        </p>
+
+        <div class="hero-actions">
+            <a href="{{ url_for('eda') }}" class="btn btn-primary">
+                Explore Analytics
+                <span aria-hidden="true">→</span>
+            </a>
+
+            <a href="{{ url_for('predict') }}" class="btn btn-secondary">
+                Try Prediction
+                <span aria-hidden="true">↗</span>
+            </a>
+        </div>
+
+        <div class="hero-trust">
+            <span class="hero-trust-icon" aria-hidden="true">✓</span>
+            Data-driven fruit condition analysis
+        </div>
+    </div>
+
+    <div class="hero-visual" aria-label="FreshChain sensor monitoring illustration">
+        <div class="visual-glow"></div>
+
+        <div class="visual-orbit orbit-one"></div>
+        <div class="visual-orbit orbit-two"></div>
+
+        <div class="fruit-illustration">
+            <svg viewBox="0 0 240 240" role="img"
+                 aria-label="Illustration of a fresh green apple">
+                <defs>
+                    <linearGradient id="appleGradient"
+                                    x1="0" y1="0" x2="1" y2="1">
+                        <stop offset="0%" stop-color="#B7E89A"/>
+                        <stop offset="50%" stop-color="#55B96B"/>
+                        <stop offset="100%" stop-color="#23834D"/>
+                    </linearGradient>
+
+                    <linearGradient id="leafGradient"
+                                    x1="0" y1="0" x2="1" y2="1">
+                        <stop offset="0%" stop-color="#B6ED9B"/>
+                        <stop offset="100%" stop-color="#368B4B"/>
+                    </linearGradient>
+                </defs>
+
+                <ellipse cx="120" cy="204" rx="68" ry="12"
+                         fill="#D8EEDB"/>
+
+                <path d="M120 64
+                         C105 47 81 49 65 61
+                         C30 82 40 132 57 165
+                         C70 191 91 202 111 190
+                         C119 185 125 185 134 190
+                         C155 201 176 185 190 157
+                         C209 120 207 83 177 63
+                         C159 51 138 50 120 64Z"
+                      fill="url(#appleGradient)"/>
+
+                <path d="M120 65 C113 47 119 34 129 24"
+                      fill="none" stroke="#765535"
+                      stroke-width="9" stroke-linecap="round"/>
+
+                <path d="M124 39
+                         C145 12 177 17 185 24
+                         C170 50 148 57 124 39Z"
+                      fill="url(#leafGradient)"/>
+
+                <path d="M130 38 L173 26"
+                      fill="none" stroke="#D5F4BD"
+                      stroke-width="2" stroke-linecap="round"/>
+
+                <path d="M68 86 C55 110 63 139 78 151"
+                      fill="none" stroke="#D6F3BD"
+                      stroke-width="8" stroke-linecap="round"
+                      opacity="0.65"/>
+
+                <circle cx="88" cy="76" r="5" fill="#FFFFFF"
+                        opacity="0.7"/>
+            </svg>
+        </div>
+
+        <div class="floating-card sensor-card">
+            <span class="floating-card-icon">⌁</span>
+            <div>
+                <span class="floating-label">SENSOR INPUTS</span>
+                <strong>4 environmental features</strong>
+            </div>
+        </div>
+
+        <div class="floating-card analysis-card">
+            <span class="analysis-check">✓</span>
+            <div>
+                <strong>ML-powered analysis</strong>
+                <span class="floating-label">Condition classification</span>
+            </div>
+        </div>
+
+        <div class="visual-caption">
+            <span class="status-indicator"></span>
+            <span>FreshChain Intelligence Workspace</span>
+        </div>
+    </div>
+</section>
+
+<!-- DASHBOARD METRICS -->
+<section class="dashboard-section">
+    <div class="section-heading">
+        <div>
+            <span class="section-kicker">WORKSPACE OVERVIEW</span>
+            <h2>Your data at a glance</h2>
+            <p>A quick overview of your fruit condition dataset.</p>
+        </div>
+
+        <a href="{{ url_for('data_loading') }}" class="text-link">
+            View dataset <span aria-hidden="true">→</span>
+        </a>
+    </div>
+
+    <div class="stats-grid">
+
+        <article class="stat-card">
+            <div class="stat-top">
+                <span class="stat-label">Dataset Records</span>
+                <span class="stat-icon">▤</span>
+            </div>
+
+            <h2>{{ total_records | default('—', true) }}</h2>
+            <p>Observations available for analysis</p>
+        </article>
+
+        <article class="stat-card">
+            <div class="stat-top">
+                <span class="stat-label">Fruit Varieties</span>
+                <span class="stat-icon">◉</span>
+            </div>
+
+            <h2>{{ fruit_count | default('—', true) }}</h2>
+            <p>Distinct fruit categories</p>
+        </article>
+
+        <article class="stat-card">
+            <div class="stat-top">
+                <span class="stat-label">Sensor Features</span>
+                <span class="stat-icon">⌁</span>
+            </div>
+
+            <h2>04</h2>
+            <p>Temperature, humidity, light and CO₂</p>
+        </article>
+
+        <article class="stat-card">
+            <div class="stat-top">
+                <span class="stat-label">ML Algorithm</span>
+                <span class="stat-icon">◈</span>
+            </div>
+
+            <h2 class="stat-word">Logistic Regression</h2>
+            <p>Classification model available in the project</p>
+        </article>
+
+    </div>
+</section>
+
+<!-- WORKFLOW -->
+<section class="dashboard-section">
+    <div class="section-heading">
+        <div>
+            <span class="section-kicker">YOUR WORKFLOW</span>
+            <h2>From raw data to predictions</h2>
+            <p>Explore each stage of the FreshChain machine learning pipeline.</p>
+        </div>
+    </div>
+
+    <div class="workflow-grid">
+
+        <a class="workflow-card" href="{{ url_for('data_loading') }}">
+            <div class="workflow-top">
+                <span class="workflow-icon">▤</span>
+                <span class="workflow-number">01</span>
+            </div>
+            <h3>Data Loading</h3>
+            <p>
+                Load the dataset, inspect records, check missing values,
+                and review column types.
+            </p>
+            <span class="workflow-link">Inspect dataset →</span>
+        </a>
+
+        <a class="workflow-card" href="{{ url_for('eda') }}">
+            <div class="workflow-top">
+                <span class="workflow-icon">▥</span>
+                <span class="workflow-number">02</span>
+            </div>
+            <h3>Exploratory Analysis</h3>
+            <p>
+                Investigate fruit categories, sensor distributions,
+                class balance, and correlations.
+            </p>
+            <span class="workflow-link">Explore insights →</span>
+        </a>
+
+        <a class="workflow-card" href="{{ url_for('feature_engineering') }}">
+            <div class="workflow-top">
+                <span class="workflow-icon">⌘</span>
+                <span class="workflow-number">03</span>
+            </div>
+            <h3>Feature Engineering</h3>
+            <p>
+                Prepare numerical features, encode fruit categories,
+                and build a model-ready preprocessing pipeline.
+            </p>
+            <span class="workflow-link">Prepare features →</span>
+        </a>
+
+        <a class="workflow-card" href="{{ url_for('model_training') }}">
+            <div class="workflow-top">
+                <span class="workflow-icon">◈</span>
+                <span class="workflow-number">04</span>
+            </div>
+            <h3>Model Training</h3>
+            <p>
+                Train Logistic Regression and assess performance
+                with classification metrics.
+            </p>
+            <span class="workflow-link">View model →</span>
+        </a>
+
+        <a class="workflow-card" href="{{ url_for('predict') }}">
+            <div class="workflow-top">
+                <span class="workflow-icon">✳</span>
+                <span class="workflow-number">05</span>
+            </div>
+            <h3>Fruit Prediction</h3>
+            <p>
+                Enter fruit and sensor readings to obtain a predicted
+                condition from the trained model.
+            </p>
+            <span class="workflow-link">Make prediction →</span>
+        </a>
+
+    </div>
+</section>
+
+<!-- FEATURE OVERVIEW -->
+<section class="dashboard-section">
+    <div class="section-heading">
+        <div>
+            <span class="section-kicker">ENVIRONMENTAL INTELLIGENCE</span>
+            <h2>What FreshChain analyses</h2>
+            <p>Four sensor measurements help describe the fruit's environment.</p>
+        </div>
+    </div>
+
+    <div class="sensor-grid">
+
+        <article class="sensor-card-home">
+            <span class="sensor-symbol">°</span>
+            <h3>Temperature</h3>
+            <p>Inspect recorded temperature measurements and their relationship with condition labels.</p>
+            <span class="sensor-unit">°C, if dataset is recorded in Celsius</span>
+        </article>
+
+        <article class="sensor-card-home">
+            <span class="sensor-symbol">≈</span>
+            <h3>Humidity</h3>
+            <p>Explore moisture-related readings and their distribution across the dataset.</p>
+            <span class="sensor-unit">Humid (%)</span>
+        </article>
+
+        <article class="sensor-card-home">
+            <span class="sensor-symbol">☼</span>
+            <h3>Light Intensity</h3>
+            <p>Analyse light readings to understand their variation across observations.</p>
+            <span class="sensor-unit">Light (Fux) — dataset column</span>
+        </article>
+
+        <article class="sensor-card-home">
+            <span class="sensor-symbol">◎</span>
+            <h3>CO₂ Concentration</h3>
+            <p>Review recorded carbon dioxide measurements and their association with condition labels.</p>
+            <span class="sensor-unit">CO₂ (pmm) — dataset column</span>
+        </article>
+
+    </div>
+</section>
+
+<!-- BOTTOM CTA -->
+<section class="insight-banner">
+    <div class="insight-symbol">✦</div>
+
+    <div class="insight-content">
+        <h3>Ready to explore your dataset?</h3>
+        <p>
+            Start with the data overview, then move through analysis,
+            feature engineering, and model evaluation.
+        </p>
+    </div>
+
+    <a href="{{ url_for('data_loading') }}" class="btn btn-primary">
+        Get Started →
+    </a>
+</section>
+
+{% endblock %}

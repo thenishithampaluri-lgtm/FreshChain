@@ -1,0 +1,219 @@
+{% extends "base.html" %}
+
+{% block title %}Exploratory Data Analysis | FreshChain{% endblock %}
+
+{% block content %}
+
+<section class="page-header">
+    <div>
+        <span class="eyebrow">DATA INTELLIGENCE / EXPLORATION</span>
+        <h1>Exploratory Data Analysis</h1>
+        <p>
+            Explore fruit-condition balance, fruit categories, sensor readings,
+            and relationships between environmental measurements.
+        </p>
+    </div>
+
+    <div class="header-badge">
+        <span class="status-dot"></span>
+        EDA Overview
+    </div>
+</section>
+
+<!-- SUMMARY STATISTICS -->
+<section class="stats-grid">
+    <article class="stat-card">
+        <div class="stat-top">
+            <span class="stat-label">Dataset Records</span>
+            <span class="stat-icon">▤</span>
+        </div>
+        <h2>{{ rows | default(0) }}</h2>
+        <p>Rows available for analysis</p>
+    </article>
+
+    <article class="stat-card">
+        <div class="stat-top">
+            <span class="stat-label">Fruit Categories</span>
+            <span class="stat-icon">◈</span>
+        </div>
+        <h2>{{ fruit_count | default(0) }}</h2>
+        <p>Distinct fruit types</p>
+    </article>
+
+    <article class="stat-card">
+        <div class="stat-top">
+            <span class="stat-label">Condition Classes</span>
+            <span class="stat-icon">◉</span>
+        </div>
+        <h2>{{ class_count | default(0) }}</h2>
+        <p>Normalized target categories</p>
+    </article>
+
+    <article class="stat-card">
+        <div class="stat-top">
+            <span class="stat-label">Sensor Features</span>
+            <span class="stat-icon">⌁</span>
+        </div>
+        <h2>4</h2>
+        <p>Temperature, humidity, light and CO₂</p>
+    </article>
+</section>
+
+<!-- DISTRIBUTION CHARTS -->
+<section class="panel">
+    <div class="panel-heading">
+        <div>
+            <span class="section-kicker">01 / TARGET ANALYSIS</span>
+            <h2>Fruit Condition Distribution</h2>
+            <p>Compare the number and proportion of Good and Bad observations.</p>
+        </div>
+        <span class="table-tag">Class balance</span>
+    </div>
+
+    {% if charts is defined and charts.class_distribution %}
+        <div class="chart-card">
+            <img
+                class="plot-image"
+                src="{{ charts.class_distribution }}"
+                alt="Bar chart and pie chart showing fruit condition class counts and proportions"
+                loading="eager"
+            >
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <span class="empty-icon">◉</span>
+            <h3>Class distribution chart unavailable</h3>
+            <p>The Flask route must generate the chart and pass charts.class_distribution.</p>
+        </div>
+    {% endif %}
+</section>
+
+<section class="panel">
+    <div class="panel-heading">
+        <div>
+            <span class="section-kicker">02 / FRUIT ANALYSIS</span>
+            <h2>Fruit Category Distribution</h2>
+            <p>Inspect record counts by fruit and the observed Bad-class rate in each category.</p>
+        </div>
+        <span class="table-tag">Category comparison</span>
+    </div>
+
+    {% if charts is defined and charts.fruit_distribution %}
+        <div class="chart-card">
+            <img
+                class="plot-image"
+                src="{{ charts.fruit_distribution }}"
+                alt="Charts showing records by fruit and observed Bad-class rate by fruit"
+                loading="lazy"
+            >
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <span class="empty-icon">▦</span>
+            <h3>Fruit distribution chart unavailable</h3>
+            <p>The Flask route must generate the chart and pass charts.fruit_distribution.</p>
+        </div>
+    {% endif %}
+</section>
+
+<!-- SENSOR DISTRIBUTIONS -->
+<section class="panel">
+    <div class="panel-heading">
+        <div>
+            <span class="section-kicker">03 / SENSOR ANALYSIS</span>
+            <h2>Environmental Sensor Distributions</h2>
+            <p>View the spread and shape of temperature, humidity, light and CO₂ readings.</p>
+        </div>
+        <span class="table-tag">Four sensor variables</span>
+    </div>
+
+    {% if charts is defined and charts.sensor_distributions %}
+        <div class="chart-card">
+            <img
+                class="plot-image"
+                src="{{ charts.sensor_distributions }}"
+                alt="Four histograms showing distributions of temperature, humidity, light and CO2 readings"
+                loading="lazy"
+            >
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <span class="empty-icon">⌁</span>
+            <h3>Sensor distribution charts unavailable</h3>
+            <p>The Flask route must generate the chart and pass charts.sensor_distributions.</p>
+        </div>
+    {% endif %}
+</section>
+
+<!-- CORRELATION -->
+<section class="panel">
+    <div class="panel-heading">
+        <div>
+            <span class="section-kicker">04 / FEATURE RELATIONSHIPS</span>
+            <h2>Sensor Correlation Heatmap</h2>
+            <p>Explore pairwise linear relationships between the numeric sensor readings.</p>
+        </div>
+        <span class="table-tag">Correlation matrix</span>
+    </div>
+
+    {% if charts is defined and charts.correlation %}
+        <div class="chart-card">
+            <img
+                class="plot-image"
+                src="{{ charts.correlation }}"
+                alt="Correlation heatmap for temperature, humidity, light and CO2 readings"
+                loading="lazy"
+            >
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <span class="empty-icon">▦</span>
+            <h3>Correlation heatmap unavailable</h3>
+            <p>The Flask route must generate the chart and pass charts.correlation.</p>
+        </div>
+    {% endif %}
+</section>
+
+<!-- NUMERIC SUMMARY -->
+<section class="panel">
+    <div class="panel-heading">
+        <div>
+            <span class="section-kicker">05 / STATISTICAL SUMMARY</span>
+            <h2>Sensor Statistics</h2>
+            <p>Review descriptive statistics for each numeric sensor column.</p>
+        </div>
+    </div>
+
+    {% if numeric_summary is defined and numeric_summary %}
+        <div class="table-wrapper">
+            {{ numeric_summary | safe }}
+        </div>
+    {% elif summary is defined and summary %}
+        <div class="table-wrapper">
+            {{ summary | safe }}
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <span class="empty-icon">▤</span>
+            <h3>Summary statistics unavailable</h3>
+            <p>Pass numeric_summary or summary from the Flask EDA route.</p>
+        </div>
+    {% endif %}
+</section>
+
+<section class="insight-banner">
+    <div class="insight-symbol">✦</div>
+    <div class="insight-content">
+        <h3>EDA completed. Ready for feature engineering?</h3>
+        <p>
+            Use these visualizations to understand the dataset before preparing
+            features and training a classification model. Observed associations
+            do not by themselves establish causation or a universal spoilage threshold.
+        </p>
+    </div>
+    <a class="btn btn-primary" href="{{ url_for('feature_engineering') }}">
+        Explore Features →
+    </a>
+</section>
+
+{% endblock %}
